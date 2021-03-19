@@ -1,0 +1,50 @@
+asyncapi: 2.0.0
+info:
+  title: Async Request/Reply Billing API
+  version: 0.1.0
+
+
+channels:
+  charge_orders:
+    subscribe:
+        message:
+          $ref: "#/components/messages/myMessage"
+    publish:
+      message:
+        $ref: "#/components/messages/myMessage"
+  failed_orders:
+    publish:
+      message:
+        bindings:
+          kafka:
+            key:
+              type: string
+              enum: ['failure_at','failure_why']
+            bindingVersion: '0.1.0'
+        $ref: "#/components/messages/myMessage"
+    subscribe:
+      message:
+        payload:
+          type: object
+          properties:
+            id:
+              type: integer
+              minimum: 0
+              description: the order id of the message coming
+            failed_reason:
+              type: string
+              minimum: 0
+              description: the reason the order failed.
+            failedAt:
+              type: string
+              format: date-time
+              description: Date and time when the order failed.
+
+
+
+components:
+  messages:
+    myMessage:
+      schemaFormat: application/raml+yaml;version=1.0
+      payload:
+        $ref: /exchange_modules/7dcb6e69-45a1-4ec2-8dad-32a832520294/ramldataype2/1.0.1/ramldataype2.raml
